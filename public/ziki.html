@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Ziki · Zedu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f7fc;
+    --card: #ffffff;
+    --text: #15121f;
+    --secondary: #3e4a63;
+    --muted: #5f6577;
+    --border: #e3e8f2;
+    --chip: #f0f2f7;
+    --accent: #1f5fd9;
+    --accent-ink: #ffffff;
+    --ok-bg: #e3f6ec;
+    --ok: #146c43;
+    --warn-bg: #fdf3d7;
+    --warn: #7a4e00;
+    --radius: 12px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #070f22;
+      --card: #0e1a33;
+      --text: #e8eef9;
+      --secondary: #b7c3da;
+      --muted: #93a0b8;
+      --border: #22324f;
+      --chip: #1b2a47;
+      --accent: #8fc9ff;
+      --accent-ink: #070f22;
+      --ok-bg: #0f3326;
+      --ok: #6ee7a8;
+      --warn-bg: #3a2c0c;
+      --warn: #f6cf6b;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 120px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, summary { font: inherit; }
+  button { cursor: pointer; }
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .skip {
+    position: absolute;
+    left: 12px;
+    top: -48px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 10px 14px;
+    border-radius: 8px;
+    z-index: 20;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .skip:focus { top: 8px; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .wrap {
+    width: min(880px, 100%);
+    margin: 0 auto;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 52px;
+  }
+  .brand-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .wordmark {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    margin-left: 3px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .vbar {
+    width: 1px;
+    height: 16px;
+    background: var(--border);
+  }
+  .workspace {
+    font-weight: 600;
+    color: var(--secondary);
+  }
+  .mode {
+    display: inline-flex;
+    align-items: center;
+  }
+  .mode button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .mode button[aria-pressed="true"] {
+    color: var(--accent);
+    background: var(--chip);
+  }
+  .middot {
+    color: var(--muted);
+    user-select: none;
+  }
+  .tabs {
+    display: flex;
+    align-items: center;
+    margin: 0 -8px;
+  }
+  .tabs button {
+    min-height: 44px;
+    padding: 0 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--secondary);
+    font-weight: 600;
+    margin-bottom: -1px;
+  }
+  .tabs button[aria-pressed="true"] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .page { padding-top: 4px; padding-bottom: 96px; }
+  h1, h2, h3, p { margin: 0; }
+  .hello {
+    margin: 20px 0 12px;
+    font-size: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  .hello .accent {
+    display: block;
+    margin-top: 4px;
+    color: var(--accent);
+  }
+  .hello.clear {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 20px;
+  }
+  .strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--secondary);
+  }
+  .ok-t { color: var(--ok); }
+  .warn-t { color: var(--warn); }
+  .strip .middot { font-weight: 500; }
+  .needs h2 {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 10px;
+  }
+  .card h3 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+  .note {
+    margin-top: 6px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    align-items: center;
+  }
+  .actions.with-link {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .btn.primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    flex: 1 1 140px;
+  }
+  .btn.secondary {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+    flex: 1 1 140px;
+  }
+  .btn.ghost {
+    color: var(--accent);
+    padding: 0 4px;
+    align-self: flex-start;
+    min-width: 44px;
+  }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.primary:active { filter: brightness(0.94); }
+  .btn.secondary:hover { background: var(--chip); }
+  .btn.ghost:hover { text-decoration: underline; }
+  .change {
+    margin-top: 12px;
+    background: var(--chip);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--secondary);
+    line-height: 1.45;
+  }
+  .change p + p { margin-top: 4px; }
+  .fold {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 12px;
+  }
+  .fold summary {
+    min-height: 48px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  .fold summary::-webkit-details-marker { display: none; }
+  .fold-end {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .fold-count {
+    color: var(--secondary);
+    background: var(--chip);
+    border-radius: 999px;
+    min-width: 28px;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .chev {
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg) translateY(-2px);
+  }
+  details[open] .chev {
+    transform: rotate(-135deg) translateY(-2px);
+  }
+  .fold ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 14px 8px;
+  }
+  .fold li {
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    color: var(--secondary);
+    line-height: 1.45;
+  }
+  .who {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .rules { margin-top: 28px; }
+  .rules h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .rules ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rules li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    color: var(--secondary);
+    line-height: 1.45;
+  }
+  .rules .k {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .page-title {
+    margin-top: 18px;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .filter {
+    min-height: 44px;
+    padding: 0 8px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--secondary);
+    font-weight: 600;
+  }
+  .filter[aria-pressed="true"] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .fcount {
+    margin-left: 4px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .filter[aria-pressed="true"] .fcount { color: var(--accent); }
+  .list {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .issues {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .issues > li + li { border-top: 1px solid var(--border); }
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+    padding: 12px 14px;
+    align-items: center;
+  }
+  .num {
+    grid-column: 1;
+    grid-row: 1;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--secondary);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chip.progress { background: var(--warn-bg); color: var(--warn); }
+  .chip.done { background: var(--ok-bg); color: var(--ok); }
+  .title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-weight: 600;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .meta {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: flex;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .person { color: var(--secondary); font-weight: 600; }
+  .meta > span:not(:last-child)::after {
+    content: "·";
+    margin: 0 6px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .more {
+    padding: 12px 14px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  @media (hover: hover) {
+    .row:hover { background: var(--chip); }
+  }
+  @media (min-width: 800px) {
+    .hello { font-size: 24px; }
+    .wrap { padding-left: 24px; padding-right: 24px; }
+    .row {
+      grid-template-columns: 4.5rem minmax(0, 1fr) auto auto auto auto;
+      gap: 12px 16px;
+    }
+    .num, .title, .chip, .meta {
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .chip { justify-self: start; }
+    .meta { display: contents; }
+    .meta > span::after { content: none !important; }
+    .comments, .when { color: var(--muted); white-space: nowrap; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#screen">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <div class="brand-block">
+        <div class="wordmark">ziki<span class="dot" aria-hidden="true"></span></div>
+        <span class="vbar" aria-hidden="true"></span>
+        <div class="workspace">Zedu</div>
+      </div>
+      <div class="mode" role="group" aria-label="Before and after">
+        <button type="button" id="view-before" data-action="view" data-view="before" aria-pressed="false">Before</button>
+        <span class="middot" aria-hidden="true">·</span>
+        <button type="button" id="view-after" data-action="view" data-view="after" aria-pressed="true">After</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Areas">
+      <button type="button" data-action="area" data-area="product" aria-pressed="true">Product</button>
+      <span class="middot" aria-hidden="true">·</span>
+      <button type="button" data-action="area" data-area="marketing" aria-pressed="false">Marketing</button>
+      <span class="middot" aria-hidden="true">·</span>
+      <button type="button" data-action="area" data-area="security" aria-pressed="false">Security</button>
+    </nav>
+  </div>
+</header>
+<div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<main id="screen" class="wrap page"></main>
+<noscript><p class="wrap">Ziki needs JavaScript for this page.</p></noscript>
+<script>
+(function () {
+  var view = "after";
+  var area = "product";
+  var filter = "open";
+  var folds = { wait: false, done: false };
+
+  var morning = {
+    needs: ["checkout", "pricing", "server"],
+    expanded: false,
+    inReview: 4,
+    stuck: 1,
+    canWait: [
+      "Password reset email still lands in spam.",
+      "Search misses titles that contain a number.",
+      "The weekly digest still sends at 3:00.",
+      "Signup still asks for a company name twice."
+    ],
+    done: [
+      "Orbit closed the broken avatar on comments.",
+      "Juno closed the slow open on long issue lists.",
+      "Pebble closed the keyboard trap in the assignee menu.",
+      "Orbit closed the comment draft that vanished on refresh.",
+      "Juno closed due dates that used the wrong time zone.",
+      "Pebble closed duplicate issues that were not linked.",
+      "Orbit closed the bell that counted a comment twice.",
+      "Juno closed the blank box on an empty billing page.",
+      "Pebble closed the export that timed out."
+    ]
+  };
+
+  var AREAS = {
+    product: {
+      counts: { open: 24, progress: 7, done: 112, all: 143 },
+      issues: [
+        { id: 1288, title: "Team invite link expires too soon", status: "open", person: "Orbit", comments: 5, time: "11 hours ago" },
+        { id: 1284, title: "Card border is hard to see in dark mode", status: "open", person: "Juno", comments: 2, time: "10 hours ago" },
+        { id: 1281, title: "Password reset email goes to spam", status: "open", person: "Orbit", comments: 2, time: "9 hours ago" },
+        { id: 1277, title: "Filter tabs sit under the keyboard on a phone", status: "open", person: "Pebble", comments: 4, time: "8 hours ago" },
+        { id: 1274, title: "Search misses titles that contain a number", status: "open", person: "Juno", comments: 1, time: "7 hours ago" },
+        { id: 1269, title: "A comment loses its line breaks", status: "open", person: "Orbit", comments: 2, time: "6 hours ago" },
+        { id: 1266, title: "Put the checkout fix on the live site", status: "open", person: "Orbit", comments: 6, time: "6 hours ago" },
+        { id: 1261, title: "The date picker covers the save button", status: "open", person: "Juno", comments: 3, time: "5 hours ago" },
+        { id: 1258, title: "Weekly digest sends at 3:00", status: "open", person: "Juno", comments: 1, time: "5 hours ago" },
+        { id: 1255, title: "Avatar image stays broken when the file is missing", status: "open", person: "Pebble", comments: 0, time: "4 hours ago" },
+        { id: 1251, title: "Show trial users the new pricing page", status: "open", person: "Juno", comments: 4, time: "3 hours ago" },
+        { id: 1248, title: "Project switcher forgets the last choice", status: "open", person: "Orbit", comments: 1, time: "3 hours ago" },
+        { id: 1244, title: "Signup asks for a company name twice", status: "open", person: "Juno", comments: 0, time: "2 hours ago" },
+        { id: 1240, title: "Test server is not responding", status: "open", person: "Pebble", comments: 8, time: "2 hours ago" },
+        { id: 1236, title: "Copied issue link drops the number", status: "open", person: "Pebble", comments: 1, time: "40 minutes ago" },
+        { id: 1228, title: "Receipt cuts off the tax line", status: "progress", person: "Orbit", comments: 9, time: "1 day ago" },
+        { id: 1221, title: "Mark all read skips mentions", status: "progress", person: "Juno", comments: 4, time: "1 day ago" },
+        { id: 1214, title: "Saved reply inserts the wrong name", status: "progress", person: "Pebble", comments: 6, time: "2 days ago" },
+        { id: 1209, title: "Issue list is slow past a thousand rows", status: "progress", person: "Orbit", comments: 11, time: "2 days ago" },
+        { id: 1202, title: "Mention emails arrive twice", status: "progress", person: "Juno", comments: 3, time: "3 days ago" },
+        { id: 1196, title: "A closed issue can still be edited", status: "progress", person: "Pebble", comments: 5, time: "3 days ago" },
+        { id: 1188, title: "The back button leaves a stale title", status: "progress", person: "Orbit", comments: 2, time: "4 days ago" },
+        { id: 1180, title: "Broken avatar on comments", status: "done", person: "Orbit", comments: 3, time: "14 hours ago" },
+        { id: 1172, title: "Slow open on long issue lists", status: "done", person: "Juno", comments: 4, time: "16 hours ago" },
+        { id: 1166, title: "Keyboard trap in the assignee menu", status: "done", person: "Pebble", comments: 6, time: "18 hours ago" },
+        { id: 1159, title: "Comment draft vanishes on refresh", status: "done", person: "Orbit", comments: 2, time: "20 hours ago" },
+        { id: 1151, title: "Due dates use the wrong time zone", status: "done", person: "Juno", comments: 3, time: "1 day ago" },
+        { id: 1144, title: "Duplicate issues are not linked", status: "done", person: "Pebble", comments: 5, time: "1 day ago" },
+        { id: 1138, title: "Bell counts a comment twice", status: "done", person: "Orbit", comments: 1, time: "1 day ago" },
+        { id: 1122, title: "Blank box on an empty billing page", status: "done", person: "Juno", comments: 2, time: "1 day ago" },
+        { id: 1114, title: "Export times out", status: "done", person: "Pebble", comments: 7, time: "2 days ago" }
+      ]
+    },
+    marketing: {
+      counts: { open: 5, progress: 2, done: 3, all: 10 },
+      issues: [
+        { id: 904, title: "Homepage headline is hard to read on a phone", status: "open", person: "Juno", comments: 2, time: "6 hours ago" },
+        { id: 899, title: "The pricing page still says coming soon in one spot", status: "open", person: "Orbit", comments: 1, time: "1 day ago" },
+        { id: 891, title: "Blog posts have no author name", status: "open", person: "Pebble", comments: 0, time: "2 days ago" },
+        { id: 886, title: "The trial email uses an old product name", status: "open", person: "Juno", comments: 4, time: "3 days ago" },
+        { id: 880, title: "Social preview image is stretched", status: "open", person: "Orbit", comments: 1, time: "4 days ago" },
+        { id: 872, title: "Launch post is waiting on a screenshot", status: "progress", person: "Juno", comments: 3, time: "1 day ago" },
+        { id: 864, title: "Footer links to a page that does not exist", status: "progress", person: "Pebble", comments: 2, time: "2 days ago" },
+        { id: 851, title: "Typo on the signup banner", status: "done", person: "Orbit", comments: 1, time: "1 day ago" },
+        { id: 844, title: "Broken logo on the blog", status: "done", person: "Juno", comments: 0, time: "2 days ago" },
+        { id: 830, title: "Newsletter form that did nothing", status: "done", person: "Pebble", comments: 5, time: "5 days ago" }
+      ]
+    },
+    security: {
+      counts: { open: 4, progress: 1, done: 2, all: 7 },
+      issues: [
+        { id: 640, title: "Session stays open on a shared computer", status: "open", person: "Orbit", comments: 6, time: "5 hours ago" },
+        { id: 633, title: "Password rules are not explained", status: "open", person: "Juno", comments: 2, time: "1 day ago" },
+        { id: 628, title: "Export can include private notes", status: "open", person: "Pebble", comments: 8, time: "2 days ago" },
+        { id: 619, title: "Old invite links still work after removal", status: "open", person: "Orbit", comments: 3, time: "3 days ago" },
+        { id: 602, title: "Login alerts go to the wrong inbox", status: "progress", person: "Juno", comments: 4, time: "1 day ago" },
+        { id: 588, title: "Lock icon that looked like a button", status: "done", person: "Pebble", comments: 1, time: "2 days ago" },
+        { id: 571, title: "A page showed another team's names", status: "done", person: "Orbit", comments: 7, time: "6 days ago" }
+      ]
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      if (c === "&") return "&" + "amp;";
+      if (c === "<") return "&" + "lt;";
+      if (c === ">") return "&" + "gt;";
+      if (c === '"') return "&" + "quot;";
+      return "&" + "#39;";
+    });
+  }
+
+  function commentLabel(n) {
+    if (n === 0) return "No comments";
+    if (n === 1) return "1 comment";
+    return n + " comments";
+  }
+
+  function statusLabel(status) {
+    if (status === "progress") return "In progress";
+    if (status === "done") return "Done";
+    return "Open";
+  }
+
+  function thingsPhrase(n) {
+    return n === 1 ? "1 thing needs you." : n + " things need you.";
+  }
+
+  function stillPhrase(n) {
+    if (n === 0) return "All clear. Your agents keep going. Next briefing tomorrow at 8:00.";
+    if (n === 1) return "1 thing still needs you.";
+    return n + " things still need you.";
+  }
+
+  function stuckPhrase(n) {
+    if (n === 0) return "none stuck";
+    if (n === 1) return "1 stuck";
+    return n + " stuck";
+  }
+
+  function issueWord(n) {
+    return n === 1 ? "issue" : "issues";
+  }
+
+  function announce(text) {
+    var live = document.getElementById("live");
+    live.textContent = "";
+    void live.offsetWidth;
+    live.textContent = text;
+  }
+
+  function updateChrome() {
+    document.getElementById("view-before").setAttribute("aria-pressed", view === "before" ? "true" : "false");
+    document.getElementById("view-after").setAttribute("aria-pressed", view === "after" ? "true" : "false");
+    document.querySelectorAll("[data-area]").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", btn.dataset.area === area ? "true" : "false");
+    });
+  }
+
+  function captureFolds() {
+    document.querySelectorAll("details[data-fold]").forEach(function (d) {
+      folds[d.dataset.fold] = d.open;
+    });
+  }
+
+  function rulesHtml() {
+    return (
+      '<section class="rules" aria-labelledby="rules-h">' +
+        '<h2 id="rules-h">Who decides what</h2>' +
+        '<ul>' +
+          '<li><span class="k">Agents do alone:</span> fixing, testing and closing ordinary issues.</li>' +
+          '<li><span class="k">Always waits for you:</span> putting changes on the live site, anything about money, anything about users\' data.</li>' +
+          '<li><span class="k">If you don\'t answer:</span> nothing goes live. It waits for you.</li>' +
+        '</ul>' +
+      '</section>'
+    );
+  }
+
+  function lineHtml(text) {
+    var i = text.indexOf(" ");
+    var who = text.slice(0, i);
+    var rest = text.slice(i + 1);
+    return '<li><span class="who">' + esc(who) + '</span> ' + esc(rest) + '</li>';
+  }
+
+  function foldHtml(id, title, items, asLine) {
+    var open = folds[id] ? " open" : "";
+    var body = items.map(asLine ? lineHtml : function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+    return (
+      '<details class="fold" data-fold="' + id + '"' + open + '>' +
+        '<summary><span>' + esc(title) + '</span><span class="fold-end"><span class="fold-count">' + items.length + '</span><span class="chev" aria-hidden="true"></span></span></summary>' +
+        '<ul>' + body + '</ul>' +
+      '</details>'
+    );
+  }
+
+  function renderAfter() {
+    var closed = morning.done.length;
+    var need = morning.needs.length;
+    var hello = need === 0
+      ? '<h1 class="hello clear" id="allclear" tabindex="-1">All clear. Your agents keep going. Next briefing tomorrow at 8:00.</h1>'
+      : '<h1 class="hello" id="greeting">Good morning. Your agents closed ' + closed + ' ' + issueWord(closed) + ' overnight. <span class="accent">' + thingsPhrase(need) + '</span></h1>';
+    var stuckClass = morning.stuck > 0 ? "warn-t" : "";
+    var strip =
+      '<p class="strip" aria-label="' + closed + ' closed, ' + morning.inReview + ' in review, ' + stuckPhrase(morning.stuck) + '">' +
+        '<span class="ok-t">' + closed + ' closed</span>' +
+        '<span class="middot" aria-hidden="true">·</span>' +
+        '<span>' + morning.inReview + ' in review</span>' +
+        '<span class="middot" aria-hidden="true">·</span>' +
+        '<span class="' + stuckClass + '">' + stuckPhrase(morning.stuck) + '</span>' +
+      '</p>';
+    var needs = "";
+    if (need > 0) {
+      needs = '<section class="needs" aria-labelledby="needs-h"><h2 id="needs-h">Needs you</h2>' +
+        morning.needs.map(cardHtml).join("") +
+      '</section>';
+    }
+    return hello + strip + needs +
+      foldHtml("wait", "Can wait", morning.canWait, false) +
+      foldHtml("done", "Done overnight", morning.done, true) +
+      rulesHtml();
+  }
+
+  function cardHtml(id) {
+    var first = morning.needs[0] === id;
+    if (id === "checkout") {
+      var expanded = morning.expanded;
+      return (
+        '<article class="card" id="card-checkout" aria-labelledby="ask-checkout">' +
+          '<h3 id="ask-checkout">Orbit wants to put the checkout fix on the live site.</h3>' +
+          '<p class="note">Changes to the live product always wait for you.</p>' +
+          '<div class="actions with-link">' +
+            '<button type="button" class="btn primary" id="' + (first ? "next-action" : "approve-checkout") + '" data-action="approve">Approve</button>' +
+            '<button type="button" class="btn ghost" id="expand-checkout" data-action="expand" aria-expanded="' + (expanded ? "true" : "false") + '" aria-controls="checkout-change">' +
+              (expanded ? "Hide what changed" : "See what changed") +
+            '</button>' +
+          '</div>' +
+          '<div class="change" id="checkout-change"' + (expanded ? "" : " hidden") + '>' +
+            '<p>The card form was wiping the address whenever a payment failed.</p>' +
+            '<p>Orbit fixed it, and the tests passed on a copy of the live site.</p>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+    if (id === "pricing") {
+      return (
+        '<article class="card" id="card-pricing" aria-labelledby="ask-pricing">' +
+          '<h3 id="ask-pricing">Juno asks: should trial users see the new pricing page?</h3>' +
+          '<p class="note">Trial users still see the old prices.</p>' +
+          '<div class="actions">' +
+            '<button type="button" class="btn secondary" id="' + (first ? "next-action" : "yes-pricing") + '" data-action="yes">Yes, show it</button>' +
+            '<button type="button" class="btn secondary" data-action="no">Not yet</button>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+    return (
+      '<article class="card" id="card-server" aria-labelledby="ask-server">' +
+        '<h3 id="ask-server">Pebble is stuck: the test server isn\'t responding.</h3>' +
+        '<p class="note">Tests are waiting until it answers.</p>' +
+        '<div class="actions">' +
+          '<button type="button" class="btn primary" id="' + (first ? "next-action" : "restart-server") + '" data-action="restart">Restart it</button>' +
+          '<button type="button" class="btn secondary" data-action="later">I\'ll look later</button>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function visibleIssues(data) {
+    var all = data.issues.slice().sort(function (a, b) { return b.id - a.id; });
+    if (filter === "all") return all;
+    return all.filter(function (item) { return item.status === filter; });
+  }
+
+  function renderBefore() {
+    var data = AREAS[area];
+    var rows = visibleIssues(data);
+    var filters = [
+      ["open", "Open", data.counts.open],
+      ["progress", "In progress", data.counts.progress],
+      ["done", "Done", data.counts.done],
+      ["all", "All", data.counts.all]
+    ];
+    var filterHtml = '<div class="filters" role="group" aria-label="Filter issues">';
+    filters.forEach(function (item, index) {
+      if (index > 0) filterHtml += '<span class="middot" aria-hidden="true">·</span>';
+      var pressed = filter === item[0] ? "true" : "false";
+      filterHtml += '<button type="button" class="filter" data-action="filter" data-filter="' + item[0] + '" aria-pressed="' + pressed + '">' +
+        item[1] + ' <span class="fcount">' + item[2] + '</span></button>';
+    });
+    filterHtml += "</div>";
+    var list = rows.map(function (item) {
+      var chip = item.status === "open" ? "chip" : "chip " + item.status;
+      return (
+        '<li class="row">' +
+          '<span class="num">#' + item.id + '</span>' +
+          '<span class="title">' + esc(item.title) + '</span>' +
+          '<span class="' + chip + '">' + statusLabel(item.status) + '</span>' +
+          '<span class="meta">' +
+            '<span class="person">' + esc(item.person) + '</span>' +
+            '<span class="comments">' + commentLabel(item.comments) + '</span>' +
+            '<span class="when">' + esc(item.time) + '</span>' +
+          '</span>' +
+        '</li>'
+      );
+    }).join("");
+    var total = filter === "all" ? data.counts.all : data.counts[filter];
+    var more = total - rows.length;
+    var moreHtml = "";
+    if (more > 0) {
+      var noun = more === 1 ? "issue" : "issues";
+      var mid = filter === "open" ? " open" : filter === "done" ? " done" : filter === "progress" ? " in progress" : "";
+      moreHtml = '<li class="more">' + more + " more" + mid + " " + noun + "</li>";
+    }
+    return (
+      '<h1 class="page-title">Issues</h1>' +
+      filterHtml +
+      '<div class="list"><ul class="issues" id="issue-list">' + list + moreHtml + '</ul></div>'
+    );
+  }
+
+  function render(opts) {
+    opts = opts || {};
+    captureFolds();
+    var y = opts.scrollTop ? 0 : window.scrollY;
+    document.getElementById("screen").innerHTML = view === "after" ? renderAfter() : renderBefore();
+    window.scrollTo(0, y);
+    if (opts.focus) {
+      var el = document.getElementById(opts.focus);
+      if (el) el.focus();
+    }
+  }
+
+  function removeNeed(id) {
+    morning.needs = morning.needs.filter(function (item) { return item !== id; });
+  }
+
+  function finish(message, line) {
+    if (line) morning.done.unshift(line);
+    var left = morning.needs.length;
+    announce(message + " " + stillPhrase(left));
+    render({ focus: left === 0 ? "allclear" : "next-action" });
+  }
+
+  document.addEventListener("click", function (event) {
+    var btn = event.target.closest("button");
+    if (!btn || !btn.dataset.action) return;
+    var action = btn.dataset.action;
+    if (action === "view") {
+      view = btn.dataset.view;
+      updateChrome();
+      render({ scrollTop: true });
+      return;
+    }
+    if (action === "area") {
+      area = btn.dataset.area;
+      updateChrome();
+      if (view === "before") render({ scrollTop: true });
+      return;
+    }
+    if (action === "filter") {
+      filter = btn.dataset.filter;
+      render({ scrollTop: true });
+      return;
+    }
+    if (action === "expand") {
+      morning.expanded = !morning.expanded;
+      announce(morning.expanded
+        ? "Showing what changed on the checkout fix."
+        : "Hid the change summary.");
+      render({ focus: "expand-checkout" });
+      return;
+    }
+    if (action === "approve") {
+      removeNeed("checkout");
+      finish("Approved. The checkout fix can go on the live site.", "You approved the checkout fix for the live site.");
+      return;
+    }
+    if (action === "yes") {
+      removeNeed("pricing");
+      morning.inReview = Math.max(0, morning.inReview - 1);
+      finish("Trial users will see the new pricing page.", "You said trial users should see the new pricing page.");
+      return;
+    }
+    if (action === "no") {
+      removeNeed("pricing");
+      morning.inReview = Math.max(0, morning.inReview - 1);
+      finish("Trial users will keep the current pricing page.", "You said not yet for the new pricing page.");
+      return;
+    }
+    if (action === "restart") {
+      removeNeed("server");
+      morning.stuck = 0;
+      finish("Restarting the test server. Pebble can go on.", "You restarted the test server so Pebble can continue.");
+      return;
+    }
+    if (action === "later") {
+      removeNeed("server");
+      morning.canWait.unshift("The test server still is not responding.");
+      finish("Saved for later, in Can wait.", null);
+    }
+  });
+
+  updateChrome();
+  render({ scrollTop: true });
+})();
+</script>
+</body>
+</html>
