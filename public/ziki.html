@@ -247,6 +247,7 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .actions.with-link .btn.primary { flex: 0 0 auto; }
   .btn {
     min-height: 44px;
     padding: 0 16px;
@@ -277,6 +278,10 @@
   .btn.primary:active { filter: brightness(0.94); }
   .btn.secondary:hover { background: var(--chip); }
   .btn.ghost:hover { text-decoration: underline; }
+  @media (min-width: 700px) {
+    .btn.primary, .btn.secondary { flex: 0 0 auto; min-width: 140px; }
+    .actions.with-link .btn.primary { align-self: flex-start; }
+  }
   .change {
     margin-top: 12px;
     background: var(--chip);
@@ -496,6 +501,38 @@
     .meta > span::after { content: none !important; }
     .comments, .when { color: var(--muted); white-space: nowrap; }
   }
+
+  /* Ziki-style header */
+  .top-row { min-height: 60px; gap: 16px; }
+  .logo { color: var(--accent); display: inline-flex; }
+  .workspace { white-space: nowrap; display:inline-flex; align-items:center; }
+  .top .wrap { width: min(1200px, 100%); }
+  .wordmark { font-size: 17px; }
+  .caret { display:inline-block; width:6px; height:6px; border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted); transform:rotate(45deg) translateY(-2px); margin-left:6px; }
+  .tabs { margin: 0; gap: 4px; flex: 1; }
+  .tabs button { display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 12px; border-radius:999px; border-bottom:0; margin:0; color:var(--secondary); font-weight:500; }
+  .tabs button svg, .bell svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .tabs button[aria-pressed="true"] { background: var(--chip); color: var(--accent); }
+  .right { display:flex; align-items:center; gap:8px; }
+  .pill { display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px; border:1px solid var(--border); border-radius:999px; font-weight:500; color:var(--secondary); background:var(--card); white-space:nowrap; }
+  .pill.user { padding-left:4px; }
+  .av { width:26px; height:26px; border-radius:50%; background:#0f7a4f; color:#fff; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .pill.pts { background: var(--warn-bg); color: var(--warn); border-color: transparent; font-weight:600; }
+  .bell { position:relative; display:inline-flex; color:var(--secondary); padding:6px; }
+  .badge { position:absolute; top:0; right:0; min-width:15px; height:15px; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  /* Before/After explainer, so the change is clear at a glance */
+  .explain { background: var(--bg); border-bottom: 1px solid var(--border); }
+  .explain-row { display:flex; align-items:center; gap:14px; min-height:56px; flex-wrap:wrap; padding-top:8px; padding-bottom:8px; }
+  .mode { background: var(--chip); border-radius: 10px; padding: 3px; gap: 2px; }
+  .mode button { min-height: 36px; padding: 0 14px; border-radius: 8px; color: var(--secondary); }
+  .mode button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .explain-text { color: var(--secondary); flex: 1; min-width: 220px; line-height: 1.45; }
+  .explain-text strong { color: var(--text); }
+  @media (max-width: 799px) {
+    .top-row { flex-wrap: wrap; }
+    .tabs { order: 3; flex-basis: 100%; overflow-x: auto; padding-bottom: 8px; }
+    .hide-sm { display: none; }
+  }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
   }
@@ -504,28 +541,35 @@
 <body>
 <a class="skip" href="#screen">Skip to content</a>
 <header class="top">
-  <div class="wrap">
-    <div class="top-row">
-      <div class="brand-block">
-        <div class="wordmark">ziki<span class="dot" aria-hidden="true"></span></div>
-        <span class="vbar" aria-hidden="true"></span>
-        <div class="workspace">Zedu</div>
-      </div>
-      <div class="mode" role="group" aria-label="Before and after">
-        <button type="button" id="view-before" data-action="view" data-view="before" aria-pressed="false">Before</button>
-        <span class="middot" aria-hidden="true">·</span>
-        <button type="button" id="view-after" data-action="view" data-view="after" aria-pressed="true">After</button>
-      </div>
+  <div class="wrap top-row">
+    <div class="brand-block">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 5h14l-9.5 11H19v3H5l9.5-11H5z" fill="currentColor"/></svg></span>
+      <span class="wordmark">ziki</span>
+      <span class="vbar" aria-hidden="true"></span>
+      <span class="workspace">Zedu <span class="caret" aria-hidden="true"></span></span>
     </div>
     <nav class="tabs" aria-label="Areas">
-      <button type="button" data-action="area" data-area="product" aria-pressed="true">Product</button>
-      <span class="middot" aria-hidden="true">·</span>
-      <button type="button" data-action="area" data-area="marketing" aria-pressed="false">Marketing</button>
-      <span class="middot" aria-hidden="true">·</span>
-      <button type="button" data-action="area" data-area="security" aria-pressed="false">Security</button>
+      <button type="button" data-action="area" data-area="product" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/></svg>Product</button>
+      <button type="button" data-action="area" data-area="marketing" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6L7 10z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>Marketing</button>
+      <button type="button" data-action="area" data-area="security" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>Security</button>
     </nav>
+    <div class="right">
+      <span class="pill hide-sm">Agents <span class="caret" aria-hidden="true"></span></span>
+      <span class="pill user"><span class="av" aria-hidden="true">AZ</span><span class="hide-sm">Alice Zendor</span></span>
+      <span class="pill pts hide-sm">128 pts</span>
+      <span class="bell" aria-label="3 notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="badge">3</span></span>
+    </div>
   </div>
 </header>
+<div class="explain">
+  <div class="wrap explain-row">
+    <div class="mode" role="group" aria-label="Before and after">
+      <button type="button" id="view-before" data-action="view" data-view="before" aria-pressed="false">Before</button>
+      <button type="button" id="view-after" data-action="view" data-view="after" aria-pressed="true">After</button>
+    </div>
+    <p id="explain-text" class="explain-text"></p>
+  </div>
+</div>
 <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 <main id="screen" class="wrap page"></main>
 <noscript><p class="wrap">Ziki needs JavaScript for this page.</p></noscript>
@@ -678,6 +722,9 @@
   function updateChrome() {
     document.getElementById("view-before").setAttribute("aria-pressed", view === "before" ? "true" : "false");
     document.getElementById("view-after").setAttribute("aria-pressed", view === "after" ? "true" : "false");
+    document.getElementById("explain-text").innerHTML = view === "after"
+      ? "<strong>After: the morning briefing.</strong> Overnight progress in one line, then only the 3 decisions that need a human. Everything else is handled by agents or can wait."
+      : "<strong>Before: today's Ziki.</strong> To find out what happened overnight and what needs them, the owner has to scroll through every open issue.";
     document.querySelectorAll("[data-area]").forEach(function (btn) {
       btn.setAttribute("aria-pressed", btn.dataset.area === area ? "true" : "false");
     });
