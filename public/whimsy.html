@@ -1,9 +1,395 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paper plane · Zedu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f7fc;color:#15121f;font:16px/1.5 Inter,system-ui,sans-serif;text-align:center;padding:24px}
-@media (prefers-color-scheme:dark){body{background:#070f22;color:#e8eef9}}
-p{color:#5f6577;margin:6px 0 0}
-</style></head>
-<body><div><h1>Paper plane</h1><p>A small moment for Zedu. Landing here shortly.</p></div></body></html>
+:root {
+  --bg: #f5f7fc;
+  --card: #ffffff;
+  --text: #15121f;
+  --muted: #5f6577;
+  --border: #e3e8f2;
+  --accent: #1f5fd9;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070f22;
+    --card: #0e1a33;
+    --text: #e8eef9;
+    --muted: #93a0b8;
+    --border: #22324f;
+    --accent: #8fc9ff;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 48px;
+  line-height: 1.45;
+}
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.sub {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  margin-top: 6px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+.chat {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.avatars { display: flex; }
+.av {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--card);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--card);
+}
+.av + .av { margin-left: -8px; background: #5b8def; }
+.room {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.messages {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 180px;
+  flex: 1;
+}
+.msg {
+  max-width: 82%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  position: relative;
+}
+.msg.them {
+  align-self: flex-start;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.msg.me {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .msg.me { color: #070f22; }
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.6875rem;
+  opacity: 0.85;
+  justify-content: flex-end;
+}
+.delivered {
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.delivered.show { opacity: 1; }
+.compose {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+.compose input {
+  flex: 1;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 0.9375rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+.compose input:focus {
+  border-color: var(--accent);
+}
+.send {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .send { color: #070f22; }
+}
+.send:hover:not(:disabled),
+.send:focus-visible:not(:disabled) {
+  transform: scale(1.04);
+}
+.send:disabled { opacity: 0.5; cursor: not-allowed; }
+.send svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.25s ease;
+}
+.send:hover:not(:disabled) svg,
+.send:focus-visible:not(:disabled) svg {
+  transform: rotate(-18deg) translateY(-1px);
+}
+.flyer {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  will-change: transform, opacity;
+}
+.flyer svg { display: block; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .send svg, .send { transition: none; }
+}
+</style>
+</head>
+<body>
+  <h1>Messages that fly.</h1>
+  <p class="sub">Press Send and watch it take off.</p>
+
+  <div class="chat" id="chat">
+    <div class="header">
+      <div class="avatars">
+        <div class="av" aria-hidden="true">Z</div>
+        <div class="av" aria-hidden="true">Y</div>
+      </div>
+      <span class="room">#launch-day · Zedu</span>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="msg them">Ready for the launch?</div>
+      <div class="msg me">Almost. Final checks now.</div>
+      <div class="msg them">Ping me when it ships 🚀</div>
+    </div>
+
+    <div class="compose">
+      <input type="text" id="input" value="Shipping today!" placeholder="Message…" maxlength="120" autocomplete="off">
+      <button type="button" class="send" id="send" aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="sr-only" aria-live="polite" id="live"></div>
+
+<script>
+(function () {
+  const messages = document.getElementById('messages');
+  const input = document.getElementById('input');
+  const sendBtn = document.getElementById('send');
+  const chat = document.getElementById('chat');
+  const live = document.getElementById('live');
+  let flying = false;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function planeSVG(size, color) {
+    return `<svg width="${size}" height="${size * 0.72}" viewBox="0 0 40 29" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M1.5 14.5L38 1.5L20.5 27.5L16 16.5L1.5 14.5Z" fill="${color}" stroke="${color}" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M16 16.5L38 1.5L20.5 27.5" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+    </svg>`;
+  }
+
+  function now() {
+    const d = new Date();
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function send() {
+    const text = input.value.trim();
+    if (!text || flying) return;
+    flying = true;
+    sendBtn.disabled = true;
+
+    if (reduce) {
+      appendMessage(text, true);
+      input.value = '';
+      live.textContent = 'Sent. Delivered.';
+      setTimeout(() => { flying = false; sendBtn.disabled = false; }, 400);
+      return;
+    }
+
+    const rect = input.getBoundingClientRect();
+    const chatRect = chat.getBoundingClientRect();
+    const startX = rect.left - chatRect.left + 12;
+    const startY = rect.top - chatRect.top + 6;
+
+    // lift card
+    const lift = document.createElement('div');
+    lift.className = 'flyer';
+    lift.style.cssText = `left:${startX}px;top:${startY}px;width:${Math.min(rect.width - 24, 200)}px;`;
+    lift.innerHTML = `<div style="background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;font-size:0.8125rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transform:scale(1);transition:transform 0.28s ease,opacity 0.28s ease;">${escapeHtml(text)}</div>`;
+    chat.appendChild(lift);
+
+    requestAnimationFrame(() => {
+      const card = lift.firstElementChild;
+      card.style.transform = 'scale(1.05, 0.35)';
+      card.style.opacity = '0.6';
+    });
+
+    setTimeout(() => {
+      const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1f5fd9';
+      lift.innerHTML = planeSVG(36, accent);
+      const plane = lift.firstElementChild;
+      plane.style.opacity = '0';
+      plane.style.transform = 'rotate(-12deg) scale(0.6)';
+      plane.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+
+      requestAnimationFrame(() => {
+        plane.style.opacity = '1';
+        plane.style.transform = 'rotate(-8deg) scale(1)';
+      });
+
+      // flight path variation
+      const driftX = 40 + Math.random() * 50;
+      const driftY = -(120 + Math.random() * 40);
+      const bank = -18 - Math.random() * 14;
+      const duration = 900 + Math.random() * 200;
+
+      setTimeout(() => {
+        plane.style.transition = `transform ${duration}ms cubic-bezier(0.25,0.1,0.25,1), opacity ${duration * 0.85}ms ease`;
+        plane.style.transform = `translate(${driftX}px, ${driftY}px) rotate(${bank}deg) scale(0.85)`;
+        plane.style.opacity = '0';
+      }, 220);
+
+      setTimeout(() => {
+        lift.remove();
+        appendMessage(text, false);
+        input.value = '';
+        live.textContent = 'Sent.';
+        // return plane
+        setTimeout(() => flyBack(), 480);
+      }, 220 + duration + 40);
+    }, 300);
+  }
+
+  function appendMessage(text, instantDelivered) {
+    const el = document.createElement('div');
+    el.className = 'msg me';
+    el.innerHTML = `${escapeHtml(text)}<div class="meta"><span class="time">${now()}</span><span class="delivered${instantDelivered ? ' show' : ''}">✓✓ Delivered</span></div>`;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    if (instantDelivered) live.textContent = 'Sent. Delivered.';
+  }
+
+  function flyBack() {
+    const last = messages.querySelector('.msg.me:last-child');
+    if (!last) { flying = false; sendBtn.disabled = false; return; }
+    const meta = last.querySelector('.meta');
+    const delivered = last.querySelector('.delivered');
+    const chatRect = chat.getBoundingClientRect();
+    const metaRect = meta.getBoundingClientRect();
+
+    const flyer = document.createElement('div');
+    flyer.className = 'flyer';
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1f5fd9';
+    flyer.innerHTML = planeSVG(18, accent);
+    const startX = chatRect.width - 30;
+    const startY = 8;
+    const endX = metaRect.left - chatRect.left - 4;
+    const endY = metaRect.top - chatRect.top - 2;
+    flyer.style.cssText = `left:${startX}px;top:${startY}px;opacity:0;transform:rotate(40deg) scale(0.5);`;
+    chat.appendChild(flyer);
+
+    const plane = flyer.firstElementChild;
+    requestAnimationFrame(() => {
+      flyer.style.transition = 'opacity 0.2s ease';
+      flyer.style.opacity = '1';
+      setTimeout(() => {
+        flyer.style.transition = 'transform 0.7s cubic-bezier(0.34,1.2,0.64,1), opacity 0.55s ease';
+        flyer.style.transform = `translate(${endX - startX}px, ${endY - startY}px) rotate(-12deg) scale(1)`;
+      }, 50);
+    });
+
+    setTimeout(() => {
+      flyer.style.opacity = '0';
+      setTimeout(() => {
+        flyer.remove();
+        delivered.classList.add('show');
+        live.textContent = 'Sent. Delivered.';
+        flying = false;
+        sendBtn.disabled = false;
+      }, 280);
+    }, 780);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); send(); }
+  });
+})();
+</script>
+</body>
+</html>
